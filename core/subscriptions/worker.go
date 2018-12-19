@@ -1,13 +1,17 @@
 package subscriptions
 
-type WorkerSubscriptionTask struct{}
+type Worker struct{}
 
 // This structure represent the input of "WorkerSubscription" task.
-type SubscriptionInput struct {
+type WorkerSubscriptionInput struct {
 	WorkerAddress string
 }
 
 // This structure represent the output of "Map" task.
-type SubscriptionOutput struct {
+type WorkerSubscriptionOutput struct {
 	Data []map[string]uint32
+}
+
+func (*Worker) Execute(pInput WorkerSubscriptionInput, pOutput *WorkerSubscriptionOutput) error {
+	return nil
 }

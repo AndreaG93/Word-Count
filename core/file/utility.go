@@ -67,8 +67,9 @@ func SplitByWord(pInputFileDirectory string, pInputFileName string, pNumber int)
 
 	// Creating output files and "*Writer" object...
 	// ====================================================================== //
-	mOutputFile := make([]*os.File, pNumber)         // Allocation array used to store "*os.File" objects.
-	mOutputWriters := make([]*bufio.Writer, pNumber) // Allocation "*Writer" object to perform write operation.
+	mOutputFile := make([]*os.File, pNumber)                    // Allocation array used to store "*os.File" objects.
+	mOutputWriters := make([]*bufio.Writer, pNumber)            // Allocation "*Writer" object to perform write operation.
+	mReplacer := strings.NewReplacer(",", "", ".", "", ";", "") // Allocation "*Replacer" object to remove punctuation from string.
 
 	for x := 0; x < pNumber; x++ {
 
@@ -92,8 +93,9 @@ func SplitByWord(pInputFileDirectory string, pInputFileName string, pNumber int)
 			x = 0
 		}
 
-		// Get a word from file and change all his Unicode letters to their lower case...
+		// Get a word from file and change all his Unicode letters to their lower case removing punctuation...
 		mCurrentWord := strings.ToLower(mWordScanner.Text())
+		mCurrentWord = mReplacer.Replace(mCurrentWord)
 
 		// Writing to file...
 		if _, mError = mOutputWriters[x].WriteString(mCurrentWord + " "); mError != nil {

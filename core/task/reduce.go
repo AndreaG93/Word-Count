@@ -41,6 +41,7 @@ func (x *Reduce) Execute(pInput ReduceTaskInput, pOutput *ReduceTaskOutput) erro
 				pOutput.Data[key] = mWordOccurrences + value
 			}
 		}
+
 	}
 	return nil
 }
