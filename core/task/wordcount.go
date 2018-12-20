@@ -11,10 +11,12 @@ import (
 	"Word-Count/core"
 	"Word-Count/core/file"
 	"Word-Count/core/utility"
+	"container/list"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 type WordCountTask struct{}
@@ -27,6 +29,21 @@ type WordCountTaskInput struct {
 // This structure represent the output of "WordCount" task.
 type WordCountTaskOutput struct {
 	Data map[string]uint32
+}
+
+var mutex = &sync.Mutex{}
+var systemWorkersList = list.New()
+
+func SubscribeSystemWorker(address string) {
+
+	mutex.Lock()
+	systemWorkersList.PushBack(address)
+
+	for e := systemWorkersList.Front(); e != nil; e = e.Next() {
+		fmt.Println(e.Value)
+	}
+	mutex.Unlock()
+
 }
 
 // This function represents server "RequestTask-Task" task.

@@ -18,16 +18,10 @@ func main() {
 	mWaitGroup := sync.WaitGroup{}
 	mWaitGroup.Add(1)
 
-	go task.WorkerInitialization(0)
-	go task.WorkerInitialization(1)
-	go task.WorkerInitialization(2)
-	go task.WorkerInitialization(3)
-	go task.WorkerInitialization(4)
-	go task.WorkerInitialization(5)
-	go task.WorkerInitialization(6)
-	go task.WorkerInitialization(7)
-	go task.WorkerInitialization(8)
-	go task.WorkerInitialization(9)
+	go task.WorkerInitialization("localhost:1000")
+	go task.WorkerInitialization("localhost:1001")
+	go task.WorkerInitialization("localhost:1002")
+	go task.WorkerInitialization("localhost:1003")
 
 	mWaitGroup.Wait()
 	/*

@@ -10,6 +10,7 @@ package task
 import (
 	"Word-Count/core"
 	"Word-Count/core/file"
+	"Word-Count/core/subscriptions"
 	"Word-Count/core/utility"
 	"fmt"
 	"net"
@@ -89,13 +90,16 @@ func ServerInitialization() {
 		utility.CheckPanicError(mServerListenerRPC.Close())
 	}()
 
-	// Publish "WorkCount" task...
+	// Publish "WorkCount" and "WorkerSubscribe" task...
 	mError = rpc.Register(&WordCountTask{})
+	utility.CheckPanicError(mError)
+
+	mError = rpc.Register(&subscriptions.Worker{})
 	utility.CheckPanicError(mError)
 
 	// PHASE 2 - Initialization "Worker-RPC-interfaces" to perform RPC call to worker...
 	// ====================================================================== //
-	workerRPCInterfacesInitialization()
+	//workerRPCInterfacesInitialization()
 
 	// PHASE 3 - Start listening for file uploading...
 	// ====================================================================== //
@@ -116,23 +120,43 @@ func ServerInitialization() {
 }
 
 // "Worker" initialization task.
-func WorkerInitialization(pWorkerID int) {
+func WorkerInitialization(pWorkerID string) {
 
 	var mError error
-	var mListener net.Listener
+	var mClient *rpc.Client
 
-	// Publish "MapTask" and "Reduce" service...
-	mError = rpc.Register(&MapTask{})
-	mError = rpc.Register(&Reduce{})
-	//utility.CheckPanicError(mError)
-
-	// Create a TCP listener that will listen on specified port...
-	mListener, mError = net.Listen(core.DefaultNetwork, core.GetWorkerAddress(pWorkerID))
+	// PHASE 2 - Preparing RPC call...
+	// ====================================================================== //
+	mClient, mError = rpc.Dial(core.DefaultNetwork, core.GetServerAddress())
 	utility.CheckPanicError(mError)
 
-	// Waiting requests...
-	for {
-		fmt.Printf("Waiting on %s\n", core.GetWorkerAddress(pWorkerID))
-		rpc.Accept(mListener)
-	}
+	var input subscriptions.WorkerSubscriptionInput
+	var output subscriptions.WorkerSubscriptionOutput
+
+	input.WorkerAddress = pWorkerID
+
+	// PHASE 3 - Send RPC request...
+	// ====================================================================== //
+	mError = mClient.Call("Worker.Execute", &input, &output)
+	utility.CheckPanicError(mError)
+
+	/*
+		var mError error
+		var mListener net.Listener
+
+		// Publish "MapTask" and "Reduce" service...
+		mError = rpc.Register(&MapTask{})
+		mError = rpc.Register(&Reduce{})
+		//utility.CheckPanicError(mError)
+
+		// Create a TCP listener that will listen on specified port...
+		mListener, mError = net.Listen(core.DefaultNetwork, core.GetWorkerAddress(pWorkerID))
+		utility.CheckPanicError(mError)
+
+		// Waiting requests...
+		for {
+			fmt.Printf("Waiting on %s\n", core.GetWorkerAddress(pWorkerID))
+			rpc.Accept(mListener)
+		}
+	*/
 }
