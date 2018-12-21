@@ -1,33 +1,27 @@
+/*
+========================================================================================================================
+Name        : core/core.go
+Author      : Andrea Graziani
+Description : This file includes some global system crucial information.
+========================================================================================================================
+*/
 package core
 
 import (
-	"container/list"
-	"fmt"
+	"net/rpc"
 	"sync"
 )
 
-var mutex = &sync.Mutex{}
-var systemWorkersList = list.New()
+// Constants
+const (
+	DefaultFileName                  = "file"
+	BufferSize                       = 1024
+	DefaultNetwork                   = "tcp"
+	DefaultServerRPCAddress          = "localhost:1234"
+	DefaultServerFileReceiverAddress = "localhost:2000"
+)
 
-func SubscribeSystemWorker(address string) {
-
-	mutex.Lock()
-	systemWorkersList.PushBack(address)
-
-	for e := systemWorkersList.Front(); e != nil; e = e.Next() {
-		fmt.Println(e.Value)
-	}
-	mutex.Unlock()
-
-}
-
-// This function is used to retrieve System Worker Dictionary Network Address from a specified Worker ID.
-func GetSystemWorkersDictionary() *list.List {
-	return systemWorkersList
-}
-
-func GetAvailableWorker() int {
-
-	return systemWorkersList.Len()
-
-}
+// System Global
+var MutexSubscription = &sync.Mutex{}
+var AvailableWorkersList = map[string]*rpc.Client{}
+var AvailableWorkersNumber = 0

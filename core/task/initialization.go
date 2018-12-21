@@ -9,61 +9,43 @@ package task
 
 import (
 	"Word-Count/core"
-	"Word-Count/core/file"
-	"Word-Count/core/subscriptions"
-	"Word-Count/core/utility"
+	"Word-Count/core/task/remote"
+	"Word-Count/core/utility/file"
+	"Word-Count/core/utility/global"
+	"Word-Count/core/utility/hashing"
 	"fmt"
 	"net"
 	"net/rpc"
 )
 
-var workerRPCInterfaces []*rpc.Client = nil // This array contains "*Client" object used to perform RPC calls.
-
-// This function is used to perform allocation and initialization of "Worker-RPC-interfaces" that is
-// an array of "*Client" object used to perform RPC calls.
-func workerRPCInterfacesInitialization() {
-
-	var mError error
-
-	workerRPCInterfaces = make([]*rpc.Client, core.WorkerCardinality)
-
-	for mIndex := range workerRPCInterfaces {
-		workerRPCInterfaces[mIndex], mError = rpc.Dial(core.DefaultNetwork, core.GetWorkerAddress(mIndex))
-		utility.CheckPanicError(mError)
-	}
-}
-
 // This function is used to perform "Client" initialization.
 func ClientInitialization(pFilePath string) {
 
 	var mError error
-	var mWordCountTaskInput WordCountTaskInput
-	var mWordCountTaskOutput WordCountTaskOutput
+	var mWordCountTaskInput remote.WordCountInput
+	var mWordCountTaskOutput remote.WordCountOutput
 	var mFileHash string
 	var mClient *rpc.Client
 
-	// PHASE 0 - Computing file-hash...
+	// PHASE 1 - Computing file-hash...
 	// ====================================================================== //
-	mFileHash, mError = utility.GetHashFromFile(pFilePath)
-	utility.CheckPanicError(mError)
+	mFileHash, mError = hashing.GetHashFromFile(pFilePath)
+	global.CheckError(mError)
 
-	// PHASE 1 - Send file to server...
+	// PHASE 2 - Send file to server...
 	// ====================================================================== //
-	mError = file.Send(pFilePath, mFileHash, core.DefaultServerFileReceiverAddress)
-	utility.CheckPanicError(mError)
+	global.CheckError(file.Send(pFilePath, mFileHash, core.DefaultServerFileReceiverAddress))
 
-	// PHASE 2 - Preparing RPC call...
+	// PHASE 3 - Request "Word-Count" service through RPC
 	// ====================================================================== //
-	mClient, mError = rpc.Dial(core.DefaultNetwork, core.GetServerAddress())
-	utility.CheckPanicError(mError)
+	mClient, mError = rpc.Dial(core.DefaultNetwork, core.DefaultServerRPCAddress)
+	global.CheckError(mError)
 
 	// Is used by server to find sent file to compute...
 	mWordCountTaskInput.FileHash = mFileHash
 
-	// PHASE 3 - Send RPC request...
-	// ====================================================================== //
-	mError = mClient.Call("WordCountTask.Execute", &mWordCountTaskInput, &mWordCountTaskOutput)
-	utility.CheckPanicError(mError)
+	mError = mClient.Call("WordCount.Execute", &mWordCountTaskInput, &mWordCountTaskOutput)
+	global.CheckError(mError)
 
 	// Print output
 	fmt.Println(mWordCountTaskOutput.Data)
@@ -76,87 +58,76 @@ func ServerInitialization() {
 	var mServerListenerRPC net.Listener
 	var mError error
 
-	// PHASE 1 - Allocate needed "Listener" objects...
+	// PHASE 1 - Allocate needed "Listener" objects used for "File-Transfer"
+	// 		     and RPC postponing their closing) ...
 	// ====================================================================== //
 	mServerListenerFileTransfer, mError = net.Listen(core.DefaultNetwork, core.DefaultServerFileReceiverAddress)
-	utility.CheckPanicError(mError)
+	global.CheckError(mError)
 	defer func() {
-		utility.CheckPanicError(mServerListenerFileTransfer.Close())
+		global.CheckError(mServerListenerFileTransfer.Close())
 	}()
 
-	mServerListenerRPC, mError = net.Listen(core.DefaultNetwork, core.GetServerAddress())
-	utility.CheckPanicError(mError)
+	mServerListenerRPC, mError = net.Listen(core.DefaultNetwork, core.DefaultServerRPCAddress)
+	global.CheckError(mError)
 	defer func() {
-		utility.CheckPanicError(mServerListenerRPC.Close())
+		global.CheckError(mServerListenerRPC.Close())
 	}()
 
 	// Publish "WorkCount" and "WorkerSubscribe" task...
-	mError = rpc.Register(&WordCountTask{})
-	utility.CheckPanicError(mError)
+	global.CheckError(rpc.Register(&remote.WordCount{}))
+	global.CheckError(rpc.Register(&remote.Subscription{}))
 
-	mError = rpc.Register(&subscriptions.Worker{})
-	utility.CheckPanicError(mError)
-
-	// PHASE 2 - Initialization "Worker-RPC-interfaces" to perform RPC call to worker...
-	// ====================================================================== //
-	//workerRPCInterfacesInitialization()
-
-	// PHASE 3 - Start listening for file uploading...
+	// PHASE 2 - Start listening for "File-Transfer"...
 	// ====================================================================== //
 	go func(x net.Listener) {
 		for {
-			fmt.Println("Waiting File!")
+			fmt.Println("Server: Waiting File!")
 			_, mError = file.Receive(x)
-			utility.CheckPanicError(mError)
+			global.CheckError(mError)
 		}
 	}(mServerListenerFileTransfer)
 
-	// PHASE 4 - Start listening for "WorkCount" task request...
+	// PHASE 3 - Start listening for RPC...
 	// ====================================================================== //
 	for {
-		fmt.Println("Server Ready!")
+		fmt.Println("Server: Waiting RPC!")
 		rpc.Accept(mServerListenerRPC)
 	}
 }
 
-// "Worker" initialization task.
-func WorkerInitialization(pWorkerID string) {
+// "WorkerSubscription" initialization task.
+func WorkerInitialization(pWorkerRPCAddress string) {
 
 	var mError error
 	var mClient *rpc.Client
+	var input remote.SubscriptionInput
+	var output remote.SubscriptionOutput
+	var mListenerRPC net.Listener
 
-	// PHASE 2 - Preparing RPC call...
+	// PHASE 1 - Allocation "RPC Listener"...
 	// ====================================================================== //
-	mClient, mError = rpc.Dial(core.DefaultNetwork, core.GetServerAddress())
-	utility.CheckPanicError(mError)
+	mListenerRPC, mError = net.Listen(core.DefaultNetwork, pWorkerRPCAddress)
+	global.CheckError(mError)
 
-	var input subscriptions.WorkerSubscriptionInput
-	var output subscriptions.WorkerSubscriptionOutput
-
-	input.WorkerAddress = pWorkerID
-
-	// PHASE 3 - Send RPC request...
+	// PHASE 2 - Execute a "Subscription" to main server...
 	// ====================================================================== //
-	mError = mClient.Call("Worker.Execute", &input, &output)
-	utility.CheckPanicError(mError)
+	mClient, mError = rpc.Dial(core.DefaultNetwork, core.DefaultServerRPCAddress)
+	global.CheckError(mError)
 
-	/*
-		var mError error
-		var mListener net.Listener
+	input.WorkerAddress = pWorkerRPCAddress
 
-		// Publish "MapTask" and "Reduce" service...
-		mError = rpc.Register(&MapTask{})
-		mError = rpc.Register(&Reduce{})
-		//utility.CheckPanicError(mError)
+	mError = mClient.Call("Subscription.Execute", &input, &output)
+	global.CheckError(mError)
 
-		// Create a TCP listener that will listen on specified port...
-		mListener, mError = net.Listen(core.DefaultNetwork, core.GetWorkerAddress(pWorkerID))
-		utility.CheckPanicError(mError)
+	// PHASE 3 - Publish "MapTask" and "Reduce" RPC, create a TCP listener
+	//			 and wait RPC request from server...
+	// ====================================================================== //
+	global.CheckError(rpc.Register(&remote.Map{}))
+	global.CheckError(rpc.Register(&remote.Reduce{}))
 
-		// Waiting requests...
-		for {
-			fmt.Printf("Waiting on %s\n", core.GetWorkerAddress(pWorkerID))
-			rpc.Accept(mListener)
-		}
-	*/
+	// Waiting requests...
+	fmt.Printf("Worker: Waiting on %s\n", pWorkerRPCAddress)
+	for {
+		rpc.Accept(mListenerRPC)
+	}
 }

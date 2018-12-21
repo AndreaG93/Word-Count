@@ -7,11 +7,10 @@ Date		: 14/12/2018
 Description : This file includes some utility function to tokenize a plain text input.
 ========================================================================================================================
 */
-package tokenizer
+package tokenization
 
 import (
-	"Word-Count/core"
-	"Word-Count/core/utility"
+	"Word-Count/core/utility/hashing"
 	"bufio"
 	"strings"
 )
@@ -22,7 +21,7 @@ import (
 //
 // According to MapReduce programming model this function represents a "Map Procedure"
 // with some "Reduce" and "Shuffle" characteristics.
-func WordFromString(pInput string) ([]map[string]uint32, error) {
+func WordFromString(pInput string, pModulus int) ([]map[string]uint32, error) {
 
 	var mNestedHashTable map[string]uint32
 	var mHastTableIndex uint32
@@ -37,10 +36,10 @@ func WordFromString(pInput string) ([]map[string]uint32, error) {
 	// ====================================================================== //
 
 	// Create an empty slice with "pWorkerCardinality" length...
-	mHashTable := make([]map[string]uint32, core.WorkerCardinality)
+	mHashTable := make([]map[string]uint32, pModulus)
 
 	// Crete "pWorkerCardinality" nested hash tables...
-	for mHastTableIndex = 0; mHastTableIndex < core.WorkerCardinality; mHastTableIndex++ {
+	for mHastTableIndex = 0; mHastTableIndex < uint32(pModulus); mHastTableIndex++ {
 		mHashTable[mHastTableIndex] = make(map[string]uint32)
 	}
 
@@ -52,7 +51,7 @@ func WordFromString(pInput string) ([]map[string]uint32, error) {
 		mCurrentWord := strings.ToLower(mWordScanner.Text())
 
 		// Getting hash table index...
-		if mHastTableIndex, mError = utility.GetHashIndexFromString(mCurrentWord, core.WorkerCardinality); mError != nil {
+		if mHastTableIndex, mError = hashing.GetHashIndexFromString(mCurrentWord, uint32(pModulus)); mError != nil {
 			return nil, mError
 		}
 

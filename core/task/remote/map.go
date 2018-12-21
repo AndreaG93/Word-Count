@@ -5,31 +5,35 @@ Author      : Andrea Graziani
 Description : This file includes RPC-function used to perform "Map" task.
 ========================================================================================================================
 */
-package task
+package remote
 
 import (
-	"Word-Count/core/tokenizer"
+	"Word-Count/core/task/tokenization"
+	"fmt"
 )
 
-type MapTask struct{}
+type Map struct{}
 
 // This structure represent the input of "Map" task.
-type MapTaskInput struct {
-	Data string
+type MapInput struct {
+	Data    string
+	Modulus int
 }
 
 // This structure represent the output of "Map" task.
-type MapTaskOutput struct {
+type MapOutput struct {
 	Data []map[string]uint32
 }
 
 // Following function represents the published RPC routine used to perform "Map" task.
-func (x *MapTask) Execute(pInput MapTaskInput, pOutput *MapTaskOutput) error {
+func (x *Map) Execute(pInput MapInput, pOutput *MapOutput) error {
 
-	if mOutput, mError := tokenizer.WordFromString(pInput.Data); mError != nil {
+	if mOutput, mError := tokenization.WordFromString(pInput.Data, pInput.Modulus); mError != nil {
 		return mError
 	} else {
 		pOutput.Data = mOutput
+		fmt.Println(pOutput.Data)
 		return nil
 	}
+
 }

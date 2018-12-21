@@ -1,6 +1,6 @@
 /*
 ========================================================================================================================
-Name        : core/task/utility.go
+Name        : core/task/file.go
 Author      : Andrea Graziani
 Description : This file includes some utility function about file managing.
 ========================================================================================================================
@@ -9,7 +9,7 @@ package file
 
 import (
 	"Word-Count/core"
-	"Word-Count/core/utility"
+	"Word-Count/core/utility/global"
 	"bufio"
 	"fmt"
 	"io"
@@ -32,7 +32,7 @@ func EmptyDirectory(pDirectoryPath string) error {
 		return mError
 	}
 	defer func() {
-		utility.CheckPanicError(mDirectory.Close())
+		global.CheckError(mDirectory.Close())
 	}()
 
 	// Reads and returns a slice of names from specified directory...
@@ -62,7 +62,7 @@ func SplitByWord(pInputFileDirectory string, pInputFileName string, pNumber int)
 		return mError
 	}
 	defer func() {
-		utility.CheckPanicError(mInputFile.Close())
+		global.CheckError(mInputFile.Close())
 	}()
 
 	// Creating output files and "*Writer" object...
@@ -111,7 +111,7 @@ func SplitByWord(pInputFileDirectory string, pInputFileName string, pNumber int)
 	// Closing files...
 	// ====================================================================== //
 	for _, element := range mOutputFile {
-		utility.CheckPanicError(element.Close())
+		global.CheckError(element.Close())
 	}
 
 	return nil
@@ -133,14 +133,14 @@ func Send(pInputFileName string, pFileHash string, pAddress string) error {
 		return mError
 	}
 	defer func() {
-		utility.CheckPanicError(mInputFile.Close())
+		global.CheckError(mInputFile.Close())
 	}()
 
 	if mConnection, mError = net.Dial(core.DefaultNetwork, pAddress); mError != nil {
 		return mError
 	}
 	defer func() {
-		utility.CheckPanicError(mConnection.Close())
+		global.CheckError(mConnection.Close())
 	}()
 
 	// Getting "file-name" and "file-size" about file and send them to receiver...
@@ -204,7 +204,7 @@ func Receive(pListener net.Listener) (string, error) {
 	// Wait client...
 	// ====================================================================== //
 	mConnection, mError = pListener.Accept()
-	utility.CheckPanicError(mError)
+	global.CheckError(mError)
 
 	// Getting "file-name" and "file-size" from sender...
 	// ====================================================================== //
@@ -240,9 +240,9 @@ func Receive(pListener net.Listener) (string, error) {
 	mOutputDirectory = filepath.Join(os.TempDir(), mFileHash)
 
 	if _, mError = os.Stat(mOutputDirectory); mError == nil {
-		utility.CheckPanicError(EmptyDirectory(mOutputDirectory))
+		global.CheckError(EmptyDirectory(mOutputDirectory))
 	} else {
-		utility.CheckPanicError(os.Mkdir(mOutputDirectory, os.ModePerm))
+		global.CheckError(os.Mkdir(mOutputDirectory, os.ModePerm))
 	}
 
 	// Open/Create output-file and defer its closing...
@@ -251,7 +251,7 @@ func Receive(pListener net.Listener) (string, error) {
 		return "", mError
 	}
 	defer func() {
-		utility.CheckPanicError(mOutputFile.Close())
+		global.CheckError(mOutputFile.Close())
 	}()
 
 	// Start receiving...

@@ -5,9 +5,10 @@ Author      : Andrea Graziani
 Description : This file includes some utility function about hash algorithms.
 ========================================================================================================================
 */
-package utility
+package hashing
 
 import (
+	"Word-Count/core/utility/global"
 	"crypto/sha1"
 	"encoding/base64"
 	"errors"
@@ -29,7 +30,7 @@ func GetHashIndexFromString(pInput string, pModulus uint32) (uint32, error) {
 
 	// Checking pInput
 	if pInput == "" {
-		return 0, errors.New(InvalidInput)
+		return 0, errors.New(global.InvalidInput)
 	}
 
 	// Getting digest and defer reset of hash state...
@@ -49,7 +50,7 @@ func GetHashFromFile(pFilePath string) (string, error) {
 
 	// Checking input
 	if pFilePath == "" {
-		return "", errors.New(InvalidInput)
+		return "", errors.New(global.InvalidInput)
 	}
 
 	// Open specified input-file and defer its closing...
@@ -57,7 +58,7 @@ func GetHashFromFile(pFilePath string) (string, error) {
 		return "", mError
 	}
 	defer func() {
-		CheckPanicError(mInputFile.Close())
+		global.CheckError(mInputFile.Close())
 	}()
 
 	// Read first 256 byte from specified file...

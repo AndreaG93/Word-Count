@@ -5,30 +5,27 @@ Author      : Andrea Graziani
 Description : This file includes RPC-function used to perform "Reduce" task.
 ========================================================================================================================
 */
-package task
-
-import (
-	"Word-Count/core"
-)
+package remote
 
 type Reduce struct{}
 
 // This structure represent the input of "Reduce" task.
-type ReduceTaskInput struct {
-	Data []map[string]uint32
+type ReduceInput struct {
+	Data    []map[string]uint32
+	Modulus int
 }
 
 // This structure represent the output of "Reduce" task.
-type ReduceTaskOutput struct {
+type ReduceOutput struct {
 	Data map[string]uint32
 }
 
 // Following function represents the published RPC routine used to perform "Reduce" task.
-func (x *Reduce) Execute(pInput ReduceTaskInput, pOutput *ReduceTaskOutput) error {
+func (x *Reduce) Execute(pInput ReduceInput, pOutput *ReduceOutput) error {
 
 	pOutput.Data = make(map[string]uint32)
 
-	for j := 0; j < core.WorkerCardinality; j++ {
+	for j := 0; j < pInput.Modulus; j++ {
 		for key, value := range pInput.Data[j] {
 
 			// Check word occurrences from selected "mNestedHashTable"...

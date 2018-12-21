@@ -5,10 +5,9 @@ Author      : Andrea Graziani
 Description : TEST SUITE
 ========================================================================================================================
 */
-package utility
+package hashing
 
 import (
-	"Word-Count/core"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -24,7 +23,7 @@ func Test_WriteFileContainsOutput(t *testing.T) {
 	mAssert = assert.New(t)
 
 	// Getting Hash-Digest...
-	mOutput, mError = GetHashFromFile("../../_data.txt")
+	mOutput, mError = GetHashFromFile("../../../_data.txt")
 	fmt.Println(mOutput)
 	mAssert.Nil(mError)
 	mAssert.NotEmpty(mOutput)

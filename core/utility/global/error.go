@@ -5,7 +5,7 @@ Author      : Andrea Graziani
 Description : This file includes some utility function about error managing.
 ========================================================================================================================
 */
-package utility
+package global
 
 // Defaults
 const (
@@ -13,7 +13,7 @@ const (
 )
 
 // This function is used to check a panic error.
-func CheckPanicError(e error) {
+func CheckError(e error) {
 	if e != nil {
 		panic(e)
 	}
