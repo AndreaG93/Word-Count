@@ -1,14 +1,17 @@
 /*
 ========================================================================================================================
-Name        : main/server.go
+Name        : main/client.go
 Author      : Andrea Graziani
-Description : This file includes "Server Entry-Point"
+Description : TEST UNIT (NOT DOCKER ENVIRONMENT)
 ========================================================================================================================
 */
-package main
+package test
 
-import "Word-Count/core/task"
+import (
+	"Word-Count/core/task"
+	"testing"
+)
 
-func main() {
-	task.ServerInitialization()
+func Test_Client(t *testing.T) {
+	task.ClientInitialization("_data_test.txt")
 }

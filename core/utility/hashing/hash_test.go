@@ -9,7 +9,7 @@ package hashing
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -17,36 +17,12 @@ func Test_WriteFileContainsOutput(t *testing.T) {
 
 	var mOutput string
 	var mError error
-	var mAssert *assert.Assertions
-
-	// Allocation "assert" object...
-	mAssert = assert.New(t)
 
 	// Getting Hash-Digest...
-	mOutput, mError = GetHashFromFile("../../../_data.txt")
+	mOutput, mError = GetHashFromFile("_data_test.txt")
+	if mError != nil {
+		os.Exit(1)
+	}
+
 	fmt.Println(mOutput)
-	mAssert.Nil(mError)
-	mAssert.NotEmpty(mOutput)
 }
-
-/*
-// Test for "getHashTableIndex" function.
-func Test_getHashTableIndex(t *testing.T) {
-
-	var mError error
-	var mAssert *assert.Assertions
-
-	// Allocation "assert" object...
-	mAssert = assert.New(t)
-
-	// Checking error...
-	_, mError = GetHashIndexFromString("andrea", uint32(core.WorkerCardinality()))
-	mAssert.Nil(mError)
-
-	_, mError = GetHashIndexFromString("graziani", core.WorkerCardinality())
-	mAssert.Nil(mError)
-
-	_, mError = GetHashIndexFromString("valeria", core.WorkerCardinality())
-	mAssert.Nil(mError)
-}
-*/

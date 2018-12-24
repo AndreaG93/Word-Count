@@ -9,19 +9,16 @@ package main
 
 import (
 	"Word-Count/core/task"
+	"fmt"
 	"os"
 )
 
-// Client "Entry-Point"
 func main() {
-	/*
-		if len(os.Args) != 2 {
-			fmt.Printf("USAGE: %s [FILEPATH]", os.Args[1])
-			os.Exit(1)
-		}
 
-		task.ClientInitialization(os.Args[1])
-	*/
-	task.ClientInitialization("./_data.txt")
-	os.Exit(0)
+	if len(os.Args) != 2 {
+		fmt.Printf("USAGE: %s [FILEPATH]", os.Args[1])
+		os.Exit(1)
+	}
+
+	task.ClientInitialization(os.Args[1])
 }
