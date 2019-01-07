@@ -21,7 +21,7 @@ import (
 func Test_Worker(t *testing.T) {
 
 	mWaitGroup := sync.WaitGroup{}
-	mArray := [4]string{"localhost:1000", "localhost:1001", "localhost:1003", "localhost:1004"}
+	mArray := [4]string{"localhost:2000", "localhost:2001", "localhost:2002", "localhost:2003"}
 
 	mWaitGroup.Add(len(mArray))
 

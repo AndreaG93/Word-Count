@@ -48,7 +48,9 @@ func ClientInitialization(pFilePath string) {
 	global.CheckError(mError)
 
 	// Print output
-	fmt.Println(mWordCountTaskOutput.Data)
+	for key, value := range mWordCountTaskOutput.Data {
+		fmt.Printf("%s -> %d\n", key, value)
+	}
 }
 
 // This function is used to perform "Server" initialization.

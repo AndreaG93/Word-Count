@@ -9,7 +9,6 @@ package remote
 
 import (
 	"Word-Count/core/task/tokenization"
-	"fmt"
 )
 
 type Map struct{}
@@ -32,7 +31,6 @@ func (x *Map) Execute(pInput MapInput, pOutput *MapOutput) error {
 		return mError
 	} else {
 		pOutput.Data = mOutput
-		fmt.Println(pOutput.Data)
 		return nil
 	}
 

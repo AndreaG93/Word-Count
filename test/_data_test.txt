@@ -1,3 +1,6 @@
-Hanabi Hanabi Hanabi Hanabi
-Andrea Andrea Andrea Andrea
-Yumi Yumi Yumi Yumi Yumi Yumi
+word1 Word1: worD1 WORD1.
+word2 Word2 worD2, word2;
+word3 Word3 worD3, word3;
+word4 Word4 worD4, word4;
+
+word55 word908 word0 word46 word87

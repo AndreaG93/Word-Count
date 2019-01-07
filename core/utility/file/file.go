@@ -67,9 +67,9 @@ func SplitByWord(pInputFileDirectory string, pInputFileName string, pNumber int)
 
 	// Creating output files and "*Writer" object...
 	// ====================================================================== //
-	mOutputFile := make([]*os.File, pNumber)                    // Allocation array used to store "*os.File" objects.
-	mOutputWriters := make([]*bufio.Writer, pNumber)            // Allocation "*Writer" object to perform write operation.
-	mReplacer := strings.NewReplacer(",", "", ".", "", ";", "") // Allocation "*Replacer" object to remove punctuation from string.
+	mOutputFile := make([]*os.File, pNumber)                             // Allocation array used to store "*os.File" objects.
+	mOutputWriters := make([]*bufio.Writer, pNumber)                     // Allocation "*Writer" object to perform write operation.
+	mReplacer := strings.NewReplacer(",", "", ".", "", ";", "", ":", "") // Allocation "*Replacer" object to remove punctuation from string.
 
 	for x := 0; x < pNumber; x++ {
 

@@ -17,8 +17,8 @@ const (
 	DefaultFileName                  = "file"
 	BufferSize                       = 1024
 	DefaultNetwork                   = "tcp"
-	DefaultServerRPCAddress          = "localhost:1234"
-	DefaultServerFileReceiverAddress = "localhost:2000"
+	DefaultServerRPCAddress          = "localhost:3001"
+	DefaultServerFileReceiverAddress = "localhost:3000"
 )
 
 // System Global
