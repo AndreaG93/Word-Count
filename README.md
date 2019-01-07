@@ -7,14 +7,23 @@ This repository contains a simple Go application to perform a distributed word c
 
 ## How to run
 
+### How to build and run server and worker with Docker
+
 Execute following commands to setup docker:
 
-1. `cd $(go env GOPATH)/src` 
+1. `cd $(go env GOPATH)/src`
 2. `git clone https://github.com/AndreaG93/Word-Count`
 3. `cd $(go env GOPATH)/src/Word-Count`
 4. `sudo sh DockerSetup.sh`
 
-(**Create $GOPATH/src directory if it doesn't exist.**)
+#### Note:
+
+Rememeber to create `$GOPATH/src` directory if it doesn't exist.
+
+`DockerSetup.sh` is a script used to build needed Docker images and containers necessary to run application.
+Is important to specify that all containers work with **HOST network** driver **ONLY**: host networking driver only works on Linux hosts, and is not supported on Docker for Mac, Docker for Windows, or Docker EE for Windows Server (see [documentation](https://docs.docker.com/network/host/)).
+
+### How to build and run client
 
 Execute following commands to build and run client into your machine.
 

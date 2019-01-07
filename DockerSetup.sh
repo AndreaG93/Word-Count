@@ -1,13 +1,5 @@
 #!/bin/sh
 
-# IMPORTANT:
-#
-# This script is used to build needed Docker images to create all necessary containers to run application.
-#
-# Following containers work with "HOST network" driver ONLY.
-# The host networking driver only works on Linux hosts, and is not supported on Docker for Mac, Docker for Windows, or Docker EE for Windows Server.
-# See https://docs.docker.com/network/host/
-
 # Building image from a Dockerfile...
 # --file 		-> Name of the Dockerfile (Default is ‘PATH/Dockerfile’)
 # --tag      	-> Name and optionally a tag in the ‘name:tag’ format
