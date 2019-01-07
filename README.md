@@ -1,3 +1,7 @@
+![](https://img.shields.io/badge/Programming_Language-Go-blue.svg)
+![](https://img.shields.io/badge/Release-1.0-blue.svg)
+![](https://img.shields.io/badge/Status-Tested-green.svg)
+
 # Word-Count
 This repository contains a simple Go application to perform a distributed word count of a plain text file. This project is designed for educational purposes. 
 
