@@ -8,7 +8,7 @@ Execute following commands to setup docker:
 1. `cd $(go env GOPATH)/src` 
 2. `git clone https://github.com/AndreaG93/Word-Count`
 3. `cd $(go env GOPATH)/src/Word-Count`
-4. `sh DockerSetup.sh`
+4. `sudo sh DockerSetup.sh`
 
 (**Create $GOPATH/src directory if it doesn't exist.**)
 
