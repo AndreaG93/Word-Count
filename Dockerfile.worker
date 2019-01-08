@@ -12,9 +12,6 @@ LABEL description="SDDC A.A. 2018-2019"
 RUN mkdir /go/src/Word-Count
 COPY ./ /go/src/Word-Count
 
-# Exposing ports...
-EXPOSE 1234/tcp
-
 # Building...
 RUN go build /go/src/Word-Count/main/worker.go
 
